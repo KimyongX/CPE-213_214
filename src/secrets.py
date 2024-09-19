@@ -1,0 +1,4 @@
+WIFI_SSID = ""
+WIFI_PASSWORD = ""
+DEVICE_ID = b""
+CLOUD_PASSWORD = b""
