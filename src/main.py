@@ -24,7 +24,6 @@ def beep(beeper,freq,duty,last):
     beeper.duty(0)
     
 def wifi_connect():
-    wlan = WLAN(STA_IF)
     wlan.active(True)
     wlan.connect(WIFI_SSID,WIFI_PASSWORD)
     oled.text('Waiting WIFI...',0,10)
@@ -67,6 +66,30 @@ def onServoStateChange(client,value):
 
 def onServoAngleChange(client,value):
     print('Servo angle value from Arduino Cloud: {}'.format(value))
+    
+def onAlarmDateChange(client,value):
+    print('Alarm Date Set to : {}'.format(value))
+
+def onAlarmMonthChange(client,value):
+    print('Alarm Month Set to : {}'.format(value))
+
+def onAlarmYearChange(client,value):
+    print('Alarm Year Set to : {}'.format(value))
+
+def onAlarmHourChange(client,value):
+    print('Alarm Hour Set to : {}'.format(value))
+
+def onAlarmMinuteChange(client,value):
+    print('Alarm Minute Set to : {}'.format(value))
+
+def onAlarmSecondChange(client,value):
+    print('Alarm Second Set to : {}'.format(value))
+
+def onAlarmRepeatChange(client,value):
+    print('Alarm Repeat Set to : {}'.format(value))
+
+def onAlarmStateChange(client,value):
+    print('Alarm Repeat Set to : {}'.format(value))
 
 #---Pin Setup---
 buzzer = Pin(12,Pin.OUT)
@@ -99,11 +122,16 @@ sensor2 = HCSR04(trigger_pin=27, echo_pin=26, echo_timeout_us=20000)
 servo = Servo(15)
 servo.write(0)
     
+wlan = WLAN(STA_IF)
 
 logging.basicConfig(datefmt="%H:%M:%S",format="%(asctime)s.%(msecs)03d %(message)s",level=logging.INFO)
 wifi_connect()
 
+oled.text('Cloud Start...',0,30)
+oled.show()
+
 arduino_client = ArduinoCloudClient(device_id = DEVICE_ID,username=DEVICE_ID, password=CLOUD_PASSWORD,sync_mode=True)
+
 arduino_client.register('message',value=None,on_write=onMessageChange)
 arduino_client.register('distance1',value=None,on_read=readDistance1)
 arduino_client.register('distance2',value=None,on_read=readDistance2)
@@ -111,10 +139,24 @@ arduino_client.register('buzzer_state',value=None,on_write=onBuzzerChange)
 arduino_client.register('servo_state',value=None,on_write=onServoStateChange)
 arduino_client.register('servo_angle',value=None,on_write=onServoAngleChange)
 
+arduino_client.register('alarm_date',value=None,on_write=onAlarmDateChange)
+arduino_client.register('alarm_month',value=None,on_write=onAlarmMonthChange)
+arduino_client.register('alarm_year',value=None,on_write=onAlarmYearChange)
+
+arduino_client.register('alarm_hour',value=None,on_write=onAlarmHourChange)
+arduino_client.register('alarm_minute',value=None,on_write=onAlarmMinuteChange)
+arduino_client.register('alarm_second',value=None,on_write=onAlarmSecondChange)
+
+arduino_client.register('alarm_repeat',value=None,on_write=onAlarmRepeatChange)
+arduino_client.register('alarm_state', value=None, on_write=onAlarmStateChange)
+
 arduino_client.start()
 
-oled.text('Cloud Start...',0,30)
+oled.text('Cloud Start...',0,30,0)
 oled.show()
+oled.text('Cloud Connected!',0,30,1)
+oled.show()
+
 
 rtc = RTC()
 settime()
@@ -124,11 +166,9 @@ current_datetime = rtc.datetime()
 print("Board's current time:", current_datetime)
 
 
-oled.text('Cloud Start...',0,30,0)
+oled.text('System Ready!',0,40)
 oled.show()
-oled.text('System Ready!',0,30)
-oled.show()
-
+sleep(1)
 
 while True:
     arduino_client.update()
@@ -140,8 +180,9 @@ while True:
     hour = current_datetime[4]
     minute = current_datetime[5]
     second = current_datetime[6]
-    oled.text("Food Feeder",0,0)
+    oled.text("Time Now",0,0)
     oled.text("{}/{}/{}".format(date,month,year),0,10)
     oled.text("{}:{}:{}".format(hour,minute,second),0,20)
+    oled.text("Feed Time",0,30)
     oled.show()
     oled.fill(0)
