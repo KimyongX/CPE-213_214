@@ -126,7 +126,7 @@ btn1_pin = Pin(13, Pin.IN)
 sensor1 = HCSR04(trigger_pin=25, echo_pin=33, echo_timeout_us=20000)
 sensor2 = HCSR04(trigger_pin=27, echo_pin=26, echo_timeout_us=20000)
 
-servo = Servo(15)
+servo = Servo(14)
 servo.write(0)
 
 wlan = WLAN(STA_IF)
