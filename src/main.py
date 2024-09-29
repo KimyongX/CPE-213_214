@@ -8,12 +8,13 @@ from arduino_iot_cloud import ArduinoCloudClient
 from hcsr04 import HCSR04
 from servo import Servo
 from ntptime import settime
+from linenotify import LineNotify
 
 WIFI_SSID = "PX_SYSTEM_2.4G"
 WIFI_PASSWORD = "PX123456789"
 DEVICE_ID = b"e9bc8a01-13d8-4547-8ed9-dfb2b8a3e3e8"
 CLOUD_PASSWORD = b"q0bRO#bFz427BZSSeA#6PyAPG"
-LINE_NOTIFY_TOKEN = "AEzG8vn6fUQQnF8qj0UFn49cePK6hszZ4u6i6Mxu9ZT"
+line = LineNotify('AEzG8vn6fUQQnF8qj0UFn49cePK6hszZ4u6i6Mxu9ZT')
 
 #---Function Definitions---
 def beep(beeper, freq, duty, last):
@@ -57,8 +58,10 @@ def onServoStateChange(client, value):
     print('Servo state from Arduino Cloud: {}'.format(value))
     if value == True:
         servo.write(00)
+        blue_led.value(1)
     else:
         servo.write(90)
+        blue_led.value(0)
 
 def onServoAngleChange(client, value):
     print('Servo angle value from Arduino Cloud: {}'.format(value))
@@ -207,6 +210,10 @@ while True:
             servo.write(00)
             sleep(1)
             servo.write(90)
+            blue_led.value(1)
+            sleep(1)
+            blue_led.value(0)
+            line.notify('Hello World!')
 
     # WiFi reconnection
     if not wlan.isconnected():
