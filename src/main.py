@@ -9,8 +9,11 @@ from hcsr04 import HCSR04
 from servo import Servo
 from ntptime import settime
 
-#---Import Credential---
-from secrets import WIFI_SSID, WIFI_PASSWORD, DEVICE_ID, CLOUD_PASSWORD, LINE_NOTIFY_TOKEN
+WIFI_SSID = "PX_SYSTEM_2.4G"
+WIFI_PASSWORD = "PX123456789"
+DEVICE_ID = b"e9bc8a01-13d8-4547-8ed9-dfb2b8a3e3e8"
+CLOUD_PASSWORD = b"q0bRO#bFz427BZSSeA#6PyAPG"
+LINE_NOTIFY_TOKEN = "AEzG8vn6fUQQnF8qj0UFn49cePK6hszZ4u6i6Mxu9ZT"
 
 #---Function Definitions---
 def beep(beeper, freq, duty, last):
@@ -53,9 +56,9 @@ def onBuzzerChange(client, value):
 def onServoStateChange(client, value):
     print('Servo state from Arduino Cloud: {}'.format(value))
     if value == True:
-        servo.write(90)
+        servo.write(00)
     else:
-        servo.write(0)
+        servo.write(90)
 
 def onServoAngleChange(client, value):
     print('Servo angle value from Arduino Cloud: {}'.format(value))
@@ -127,7 +130,7 @@ sensor1 = HCSR04(trigger_pin=25, echo_pin=33, echo_timeout_us=20000)
 sensor2 = HCSR04(trigger_pin=27, echo_pin=26, echo_timeout_us=20000)
 
 servo = Servo(14)
-servo.write(0)
+servo.write(90)
 
 wlan = WLAN(STA_IF)
 
@@ -201,16 +204,20 @@ while True:
             hour == alarm_hour and minute == alarm_minute and second == alarm_second):
             logging.info("Alarm triggered!")
             beep(buzzer, 1000, 512, 1)  # Sound the buzzer for 1 second
+            servo.write(00)
+            sleep(1)
+            servo.write(90)
 
     # WiFi reconnection
     if not wlan.isconnected():
         logging.info("WIFI lost. Reconnecting...")
         wifi_connect()
 
-    # Button Handling (Pin 13)
-    if btn1_pin.value() == 0:  # Assuming button press reads low
-        logging.info("Button pressed!")
+    #Button Handling (Pin 13)
+   # if btn1_pin.value() == 0:  # Assuming button press reads low
+        #logging.info("Button pressed!")
         # Add actions here if needed
     
     sleep(0.1)  # Small delay to avoid high CPU usage
+
 
