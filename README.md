@@ -11,7 +11,6 @@ Presented by
 ## System Design
 
 1. Dependencies
-   - [MicroPython-Linenotify](https://github.com/PerfecXX/Micropython-Linenotify)
    - [Arduino IoT Cloud Python](https://github.com/arduino/arduino-iot-cloud-py)
    - [HCSR04 Ultrasonic Sensor Library](https://github.com/PerfecXX/KMITL-IIoTDevBoard/blob/main/library/hcsr04.py)
    - [SSD1306 I2C OLED](https://github.com/PerfecXX/KMITL-IIoTDevBoard/blob/main/library/ssd1306.py)
