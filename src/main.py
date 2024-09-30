@@ -42,7 +42,7 @@ def wifi_connect():
 
 def readDistance1(client):
     distance1 = sensor1.distance_cm()
-    distance1 = map(distance1, 3, 14, 100, 0)
+    distance1 = map(distance1, 3, 14, 100, 0)    
     return distance1
 
 def readDistance2(client):
@@ -73,44 +73,53 @@ def onAlarmDateChange(client, value):
     global alarm_day
     print('Alarm Date Set to : {}'.format(value))
     alarm_day = value
+    updateFeedTime()
 
 def onAlarmMonthChange(client, value):
     global alarm_month
     print('Alarm Month Set to : {}'.format(value))
     alarm_month = value
+    updateFeedTime()
 
 def onAlarmYearChange(client, value):
     global alarm_year
     print('Alarm Year Set to : {}'.format(value))
     alarm_year = value
+    updateFeedTime()
 
 def onAlarmHourChange(client, value):
     global alarm_hour
     print('Alarm Hour Set to : {}'.format(value))
     alarm_hour = value
+    updateFeedTime()
 
 def onAlarmMinuteChange(client, value):
     global alarm_minute
     print('Alarm Minute Set to : {}'.format(value))
     alarm_minute = value
+    updateFeedTime()
 
 def onAlarmSecondChange(client, value):
     global alarm_second
     print('Alarm Second Set to : {}'.format(value))
     alarm_second = value
+    updateFeedTime()
 
 def onAlarmRepeatChange(client, value):
     global alarm_repeat
     print('Alarm Repeat Set to : {}'.format(value))
     alarm_repeat = value
+    updateFeedTime()
 
 def onAlarmRepeatValueChange(client, value):
     global alarm_repeat_value
     print('Alarm Repeat Value Set to : {}'.format(value))
     alarm_repeat_value = value
+    updateFeedTime()
 
 def onAlarmStateChange(client, value):
     print('Alarm State Set to : {}'.format(value))
+    updateFeedTime()
 
 def foodFeed():
     servo.write(30)
@@ -134,6 +143,8 @@ def updateFeedTime():
     alarm_hour = arduino_client["alarm_hour"]
     alarm_minute = arduino_client["alarm_minute"]
     alarm_second = arduino_client["alarm_second"]
+    
+    arduino_client['message'] = " เวลาให้อาหารครั้งต่อไปคือ\n {}:{}:{} ".format(alarm_hour,alarm_minute,alarm_second)
     
         
 # Button Interrupt Handler
@@ -256,9 +267,15 @@ while True:
         if (year == alarm_year and month == alarm_month and day == alarm_day and 
             hour == alarm_hour and minute == alarm_minute and second == alarm_second):
             print("Alarm Triggered!")
+            sleep(0.5)
             beep(buzzer, 500, 1000, 0.5)
             foodFeed()
             updateFeedTime()
+            arduino_client['message'] = "{}:{}:{} ให้อาหารแมวแล้ว\nระดับอาหารคงเหลือในปัจจุบันคือ {}% ".format(hour,minute,second,arduino_client["distance1"])
+            
+    
+    if arduino_client['distance1'] < 10:
+        arduino_client['message'] = "อาหารหมดแล้ว กรุณาเติมอาหารด้วย เหมี๋ยวๆ"
                     
     # WiFi reconnection
     if not wlan.isconnected():
@@ -266,3 +283,4 @@ while True:
         wifi_connect()
 
     sleep(0.1)  # Small delay to avoid high CPU usage
+
