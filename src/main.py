@@ -8,7 +8,6 @@ from arduino_iot_cloud import ArduinoCloudClient
 from hcsr04 import HCSR04
 from servo import Servo
 from ntptime import settime
-from linenotify import LineNotify
 from gc import collect
 
 WIFI_SSID = "PX_SYSTEM_2.4G"
@@ -121,6 +120,7 @@ def foodFeed():
     blue_led.value(0)
 
 def updateFeedTime():
+    global rtc,alarm_day,alarm_month,alarm_year,alarm_hour,alarm_minute,alarm_second
     current_datetime = rtc.datetime()
     year, month, day = current_datetime[0], current_datetime[1], current_datetime[2]
     hour, minute, second = current_datetime[4], current_datetime[5], current_datetime[6]
@@ -130,7 +130,12 @@ def updateFeedTime():
         arduino_client["alarm_hour"], arduino_client["alarm_minute"], arduino_client["alarm_second"] = current_datetime[4], current_datetime[5] + arduino_client["alarm_repeat_value"], current_datetime[6]
     elif arduino_client["alarm_repeat"] == 2:
         arduino_client["alarm_hour"], arduino_client["alarm_minute"], arduino_client["alarm_second"] = current_datetime[4] + arduino_client["alarm_repeat_value"], current_datetime[5], current_datetime[6]
-
+    
+    alarm_hour = arduino_client["alarm_hour"]
+    alarm_minute = arduino_client["alarm_minute"]
+    alarm_second = arduino_client["alarm_second"]
+    
+        
 # Button Interrupt Handler
 def button_handler(pin):
     print("Button pressed!")
@@ -181,6 +186,7 @@ wifi_connect()
 oled.text('Cloud Start...', 0, 30)
 oled.show()
 
+collect()
 # Arduino Cloud Setup
 arduino_client = ArduinoCloudClient(device_id=DEVICE_ID, username=DEVICE_ID, password=CLOUD_PASSWORD, sync_mode=True)
 
@@ -224,9 +230,6 @@ sleep(1)
 
 updateFeedTime()
 
-
-    
-
 #---Main Loop---
 while True:
     collect()
@@ -256,7 +259,7 @@ while True:
             beep(buzzer, 500, 1000, 0.5)
             foodFeed()
             updateFeedTime()
-                
+                    
     # WiFi reconnection
     if not wlan.isconnected():
         logging.info("WIFI lost. Reconnecting...")
