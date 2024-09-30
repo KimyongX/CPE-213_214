@@ -52,19 +52,26 @@ def readDistance2(client):
 def onMessageChange(client, value):
     print('Message from Arduino Cloud:{}'.format(value))
 
+def sendMessage(message):
+    arduino_client['message'] = "\x1b"
+    arduino_client['message'] = "{}".format(message)
+
 def onBuzzerChange(client, value):
     print('Buzzer value from Arduino Cloud: {}'.format(value))
     if value == True:
+        sendMessage("เรียกน้องแมวแล้ว!")
         beep(buzzer, 500, 1000, 0.5)
-
+        
 def onServoStateChange(client, value):
     print('Servo state from Arduino Cloud: {}'.format(value))
     if value == True:
         servo.write(30)
         blue_led.value(1)
+        sendMessage("ให้อาหารแล้ว")
     else:
         servo.write(110)
         blue_led.value(0)
+        sendMessage("สิ้นสุดการให้อาหาร")
 
 def onServoAngleChange(client, value):
     print('Servo angle value from Arduino Cloud: {}'.format(value))
@@ -127,6 +134,7 @@ def foodFeed():
     sleep(0.5)
     servo.write(110)
     blue_led.value(0)
+    sendMessage("ให้อาหารแล้ว")
 
 def updateFeedTime():
     global rtc,alarm_day,alarm_month,alarm_year,alarm_hour,alarm_minute,alarm_second
@@ -144,9 +152,9 @@ def updateFeedTime():
     alarm_minute = arduino_client["alarm_minute"]
     alarm_second = arduino_client["alarm_second"]
     
-    arduino_client['message'] = " เวลาให้อาหารครั้งต่อไปคือ\n {}:{}:{} ".format(alarm_hour,alarm_minute,alarm_second)
+    sendMessage("ระบบพร้อมใช้งาน\nเวลาให้อาหารครั้งต่อไปคือ\n {}:{}:{} ".format(alarm_hour,alarm_minute,alarm_second))
     
-        
+    
 # Button Interrupt Handler
 def button_handler(pin):
     print("Button pressed!")
@@ -202,7 +210,7 @@ collect()
 arduino_client = ArduinoCloudClient(device_id=DEVICE_ID, username=DEVICE_ID, password=CLOUD_PASSWORD, sync_mode=True)
 
 # Register Cloud Variables
-arduino_client.register('message', value=None, on_write=onMessageChange)
+arduino_client.register('message', value="\x1b", on_write=onMessageChange)
 arduino_client.register('distance1', value=None, on_read=readDistance1)
 arduino_client.register('distance2', value=None, on_read=readDistance2)
 arduino_client.register('buzzer_state', value=None, on_write=onBuzzerChange)
@@ -236,11 +244,9 @@ print("Board's current time:", current_datetime)
 
 oled.text('System Ready!', 0, 40)
 oled.show()
-arduino_client["message"] = "ระบบเริ่มต้นการทำงาน"
-sleep(1)
+sleep(5)
 
 updateFeedTime()
-
 #---Main Loop---
 while True:
     collect()
@@ -271,8 +277,7 @@ while True:
             beep(buzzer, 500, 1000, 0.5)
             foodFeed()
             updateFeedTime()
-            arduino_client['message'] = "{}:{}:{} ให้อาหารแมวแล้ว\nระดับอาหารคงเหลือในปัจจุบันคือ {}% ".format(hour,minute,second,arduino_client["distance1"])
-            
+            sendMessage("ให้อาหารแมวแล้ว\nระดับอาหารคงเหลือในปัจจุบันคือ {}% ".format(arduino_client["distance1"]))
     
     if arduino_client['distance1'] < 10:
         arduino_client['message'] = "อาหารหมดแล้ว กรุณาเติมอาหารด้วย เหมี๋ยวๆ"
@@ -282,5 +287,4 @@ while True:
         logging.info("WIFI lost. Reconnecting...")
         wifi_connect()
 
-    sleep(0.1)  # Small delay to avoid high CPU usage
-
+    sleep(0.1) 
