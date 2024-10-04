@@ -21,7 +21,7 @@ Presented by
 5. Testing
    - [All Testing File](https://github.com/KimyongX/CPE-213_214/tree/main/src/test)
 7. Final Result
-   - [Tesing Feature Video](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+   - [Tesing Feature Video](https://youtu.be/dQw4w9WgXcQ)
    - [Demonstration Video](https://drive.google.com/file/d/18VZN1QhEOwXmEIh1V3R30R4qDioAOuiv/view?usp=sharing)
 
 ## Reference & Useful Resources
