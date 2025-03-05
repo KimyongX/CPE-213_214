@@ -10,10 +10,10 @@ from servo import Servo
 from ntptime import settime
 from gc import collect
 
-WIFI_SSID = "PX_SYSTEM_2.4G"
-WIFI_PASSWORD = "PX123456789"
-DEVICE_ID = b"e9bc8a01-13d8-4547-8ed9-dfb2b8a3e3e8"
-CLOUD_PASSWORD = b"q0bRO#bFz427BZSSeA#6PyAPG"
+WIFI_SSID = "Your WIFI"
+WIFI_PASSWORD = "Your WIFI PASSWORD"
+DEVICE_ID = b"DEVICE_ID"
+CLOUD_PASSWORD = b"CLOUD_PASSWORD"
 
 #---Function Definitions---
 def map(source, source_min, source_max, output_min, output_max):
